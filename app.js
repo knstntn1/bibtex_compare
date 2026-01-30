@@ -356,7 +356,17 @@ function formatEntryFields(entry) {
 
   const raw = entry.raw || {};
   const keys = Object.keys(raw).sort((a, b) => a.localeCompare(b, "de"));
+  const skip = new Set([
+    "date-added",
+    "date-modified",
+    "bibsource",
+    "key",
+    "title",
+    "timestamp",
+    "biburl",
+  ]);
   for (const k of keys) {
+    if (skip.has(k)) continue;
     const val = raw[k];
     if (val === undefined || val === null || String(val).trim() === "") continue;
     rows.push([k, String(val)]);
