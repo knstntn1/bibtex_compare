@@ -112,11 +112,24 @@ function render() {
         const authors = entry.author || "";
         const year = entry.year || "";
         const venue = entry.venue || "";
+        const location = entry.location || "";
+        const publisher = entry.publisher || "";
+        const volume = entry.volume || "";
+        const number = entry.number || "";
+        const pages = entry.pages || "";
+        const doi = entry.doi || "";
+        const url = entry.url || "";
 
         meta.innerHTML = [
-          authors ? `<div>${escapeHtml(authors)}</div>` : "",
-          year ? `<div>${escapeHtml(year)}</div>` : "",
-          venue ? `<div>${escapeHtml(venue)}</div>` : "",
+          authors ? `<div>Autor:innen: ${escapeHtml(authors)}</div>` : "",
+          year ? `<div>Jahr: ${escapeHtml(year)}</div>` : "",
+          venue ? `<div>Venue: ${escapeHtml(venue)}</div>` : "",
+          location ? `<div>Ort: ${escapeHtml(location)}</div>` : "",
+          publisher ? `<div>Publisher: ${escapeHtml(publisher)}</div>` : "",
+          volume || number ? `<div>Band/Nr.: ${escapeHtml([volume, number].filter(Boolean).join(" / "))}</div>` : "",
+          pages ? `<div>Seiten: ${escapeHtml(pages)}</div>` : "",
+          doi ? `<div>DOI: ${escapeHtml(doi)}</div>` : "",
+          url ? `<div>URL: ${escapeHtml(url)}</div>` : "",
         ].filter(Boolean).join("");
 
         cell.appendChild(title);
@@ -210,7 +223,14 @@ function parseEntryBody(body) {
     year: rawYear || (yearFromDate ? yearFromDate : ""),
     yearDisplay: rawYear || (yearFromDate ? yearFromDate : ""),
     yearNormalized: normalizedYear,
-    venue: fields.journal || fields.booktitle || fields.publisher || fields.school || "",
+    venue: fields.journal || fields.booktitle || fields.series || "",
+    location: fields.location || fields.address || fields.place || "",
+    publisher: fields.publisher || fields.school || fields.institution || fields.organization || "",
+    volume: fields.volume || "",
+    number: fields.number || "",
+    pages: fields.pages || "",
+    doi: fields.doi || "",
+    url: fields.url || fields.link || "",
     raw: fields,
   };
   return entry;
@@ -387,14 +407,20 @@ function cleanTitleForDisplay(title) {
 
 function stripInClause(title) {
   let t = title || "";
-  if (/^\s*In:\s+/i.test(t)) {
-    t = t.replace(/^\s*In:\s+/i, "").trim();
-  }
-  const parts = t.split(/\s+In:\s+/i);
-  if (parts.length > 1) {
-    const left = parts[0].replace(/[.:\s]+$/g, "").trim();
+  t = t.replace(/^\s*In[:\s]+/i, "").trim();
+
+  const punctMatch = t.match(/^(.*?)[.:\-–—]\s*In:\s*(.+)$/i);
+  if (punctMatch) {
+    const left = punctMatch[1].replace(/[.:\s]+$/g, "").trim();
     if (left.length >= 8) return left;
   }
+
+  const idx = t.search(/\s+In:\s+/i);
+  if (idx >= 0) {
+    const left = t.slice(0, idx).replace(/[.:\s]+$/g, "").trim();
+    if (left.length >= 8) return left;
+  }
+
   return t;
 }
 
