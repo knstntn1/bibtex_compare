@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BibTeX Vergleich</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>BibTeX Vergleich</h1>
+    <p class="subtitle">Vergleicht drei BibTeX-Dateien nach normalisiertem Titel.</p>
+  </header>
+
+  <section class="controls">
+    <div class="control">
+      <label for="authorFilter">Namensfilter (Author-Feld)</label>
+      <input id="authorFilter" type="text" placeholder="z. B. Müller" list="authorList" />
+      <datalist id="authorList"></datalist>
+    </div>
+    <div class="control">
+      <label for="yearFilter">Jahr</label>
+      <select id="yearFilter"></select>
+    </div>
+    <div class="control checkbox">
+      <label>
+        <input id="onlyDiff" type="checkbox" />
+        Nur Unterschiede anzeigen
+      </label>
+    </div>
+    <div class="control">
+      <button id="reload">Dateien neu laden</button>
+    </div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <main>
+    <div class="legend">
+      <span class="badge all">In allen Dateien</span>
+      <span class="badge partial">Nicht in allen Dateien</span>
+    </div>
+    <div class="table" id="resultTable"></div>
+  </main>
+
+  <footer>
+    <p>Geladen: <span id="fileNames"></span></p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
