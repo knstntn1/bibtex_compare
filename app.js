@@ -109,28 +109,7 @@ function render() {
 
         const meta = document.createElement("div");
         meta.className = "entry-meta";
-        const authors = entry.author || "";
-        const year = entry.year || "";
-        const venue = entry.venue || "";
-        const location = entry.location || "";
-        const publisher = entry.publisher || "";
-        const volume = entry.volume || "";
-        const number = entry.number || "";
-        const pages = entry.pages || "";
-        const doi = entry.doi || "";
-        const url = entry.url || "";
-
-        meta.innerHTML = [
-          authors ? `<div>Autor:innen: ${escapeHtml(authors)}</div>` : "",
-          year ? `<div>Jahr: ${escapeHtml(year)}</div>` : "",
-          venue ? `<div>Venue: ${escapeHtml(venue)}</div>` : "",
-          location ? `<div>Ort: ${escapeHtml(location)}</div>` : "",
-          publisher ? `<div>Publisher: ${escapeHtml(publisher)}</div>` : "",
-          volume || number ? `<div>Band/Nr.: ${escapeHtml([volume, number].filter(Boolean).join(" / "))}</div>` : "",
-          pages ? `<div>Seiten: ${escapeHtml(pages)}</div>` : "",
-          doi ? `<div>DOI: ${escapeHtml(doi)}</div>` : "",
-          url ? `<div>URL: ${escapeHtml(url)}</div>` : "",
-        ].filter(Boolean).join("");
+        meta.innerHTML = formatEntryFields(entry);
 
         cell.appendChild(title);
         cell.appendChild(meta);
@@ -368,6 +347,24 @@ function extractYear(value) {
   if (!value) return "";
   const match = String(value).match(/\b(19|20)\d{2}\b/);
   return match ? match[0] : "";
+}
+
+function formatEntryFields(entry) {
+  const rows = [];
+  if (entry.type) rows.push(["type", entry.type]);
+  if (entry.key) rows.push(["key", entry.key]);
+
+  const raw = entry.raw || {};
+  const keys = Object.keys(raw).sort((a, b) => a.localeCompare(b, "de"));
+  for (const k of keys) {
+    const val = raw[k];
+    if (val === undefined || val === null || String(val).trim() === "") continue;
+    rows.push([k, String(val)]);
+  }
+
+  return rows
+    .map(([k, v]) => `<div><strong>${escapeHtml(k)}</strong>: ${escapeHtml(v)}</div>`)
+    .join("");
 }
 
 function rowMatchesFilters(rowEntries, authorNeedle, yearNeedle) {
